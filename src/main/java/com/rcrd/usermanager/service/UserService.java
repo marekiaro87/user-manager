@@ -1,10 +1,13 @@
 package com.rcrd.usermanager.service;
 
+import com.rcrd.usermanager.exception.UserAlreadyExistingException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
 import com.rcrd.usermanager.persistence.dao.UserDao;
 import com.rcrd.usermanager.persistence.model.User;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -17,8 +20,16 @@ public class UserService implements UserServiceI {
     }
 
     @Override
-    public User create(User user) {
-        return userDao.save(user);
+    @Transactional
+    public User create(User user) throws UserAlreadyExistingException {
+        User existingUser = userDao.findByEmail(user.getEmail());
+        if (existingUser == null) {
+            return userDao.save(user);
+        } else {
+            String errorMsg =
+                    String.format("A user with the same email already exists: %s", user.getEmail());
+            throw new UserAlreadyExistingException(errorMsg);
+        }
     }
 
     @Override
@@ -27,12 +38,12 @@ public class UserService implements UserServiceI {
     }
 
     @Override
-    public List<User> getByName(String name) {
+    public List<User> findByName(String name) {
         return userDao.findByFirstName(name);
     }
 
     @Override
-    public List<User> getByAddress(String address) {
+    public List<User> findByAddress(String address) {
         return userDao.findByAddressContaining(address);
     }
 
@@ -42,13 +53,12 @@ public class UserService implements UserServiceI {
     }
 
     @Override
+    @Transactional
     public User update(User user) throws UserNotFoundException {
-        User existingUser = userDao.findByEmail(user.getEmail());
-        if (existingUser != null) {
-            user.setId(existingUser.getId());
-            user.setPassword(existingUser.getPassword());
+        try {
+            userDao.getOne(user.getId());
             return userDao.save(user);
-        } else {
+        } catch (EntityNotFoundException e) {
             throw new UserNotFoundException("User doesn't exist");
         }
     }
