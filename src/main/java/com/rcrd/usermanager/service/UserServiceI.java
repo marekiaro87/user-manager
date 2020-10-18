@@ -1,6 +1,6 @@
 package com.rcrd.usermanager.service;
 
-import com.rcrd.usermanager.exception.UserAlreadyExistingException;
+import com.rcrd.usermanager.exception.UserCreationException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
 import com.rcrd.usermanager.persistence.model.User;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface UserServiceI {
 
-    User create(User user) throws UserAlreadyExistingException;
+    User create(User user, String ipAddress) throws UserCreationException;
 
     User getById(long id);
 

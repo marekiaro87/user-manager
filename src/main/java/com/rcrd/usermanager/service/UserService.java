@@ -1,6 +1,7 @@
 package com.rcrd.usermanager.service;
 
-import com.rcrd.usermanager.exception.UserAlreadyExistingException;
+import com.rcrd.usermanager.exception.ExceptionMessages;
+import com.rcrd.usermanager.exception.UserCreationException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
 import com.rcrd.usermanager.persistence.dao.UserDao;
 import com.rcrd.usermanager.persistence.model.User;
@@ -15,20 +16,28 @@ public class UserService implements UserServiceI {
 
     private final UserDao userDao;
 
-    public UserService(UserDao userDao) {
+    private final UserLocationServiceI userLocationService;
+
+    private static final String SWISS_COUNTRY_CODE = "CH";
+
+    public UserService(UserDao userDao, UserLocationServiceI userLocationService) {
         this.userDao = userDao;
+        this.userLocationService = userLocationService;
     }
 
     @Override
     @Transactional
-    public User create(User user) throws UserAlreadyExistingException {
-        User existingUser = userDao.findByEmail(user.getEmail());
+    public User create(User user, String ipAddress) throws UserCreationException {
+        User existingUser = userDao.getByEmail(user.getEmail());
         if (existingUser == null) {
-            return userDao.save(user);
+            String userCountry = userLocationService.getCountryByIp(ipAddress);
+            if (userCountry.equals(SWISS_COUNTRY_CODE)) {
+                return userDao.save(user);
+            } else {
+                throw new UserCreationException(String.format(ExceptionMessages.CREATION_NOT_ALLOWED, user.getEmail()));
+            }
         } else {
-            String errorMsg =
-                    String.format("A user with the same email already exists: %s", user.getEmail());
-            throw new UserAlreadyExistingException(errorMsg);
+            throw new UserCreationException(String.format(ExceptionMessages.EMAIL_ALREADY_EXISTS, user.getEmail()));
         }
     }
 
@@ -49,7 +58,7 @@ public class UserService implements UserServiceI {
 
     @Override
     public User getByEmail(String email) {
-        return userDao.findByEmail(email);
+        return userDao.getByEmail(email);
     }
 
     @Override
@@ -59,7 +68,7 @@ public class UserService implements UserServiceI {
             userDao.getOne(user.getId());
             return userDao.save(user);
         } catch (EntityNotFoundException e) {
-            throw new UserNotFoundException("User doesn't exist");
+            throw new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING);
         }
     }
 

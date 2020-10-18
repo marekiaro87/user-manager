@@ -1,6 +1,6 @@
 package com.rcrd.usermanager.service;
 
-import com.rcrd.usermanager.exception.UserAlreadyExistingException;
+import com.rcrd.usermanager.exception.UserCreationException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
 import com.rcrd.usermanager.persistence.dao.UserDao;
 import com.rcrd.usermanager.persistence.model.User;
@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -26,23 +25,38 @@ public class UserServiceTest {
     @Mock
     private User userMock;
 
+    @Mock
+    private UserLocationServiceI userLocationService;
+
     @InjectMocks
     private UserService userService;
 
     @Test
-    public void shouldCreateAUser() throws UserAlreadyExistingException {
-        when(userDao.findByEmail(userMock.getEmail())).thenReturn(null);
+    public void shouldCreateAUser() throws UserCreationException {
+        String ipAddress = "SwissIpAddress";
+        when(userDao.getByEmail(userMock.getEmail())).thenReturn(null);
         when(userDao.save(userMock)).thenReturn(userMock);
-        userService.create(userMock);
-        verify(userDao, times(1)).findByEmail(userMock.getEmail());
+        when(userLocationService.getCountryByIp(ipAddress)).thenReturn("CH");
+        userService.create(userMock, ipAddress);
+        verify(userDao, times(1)).getByEmail(userMock.getEmail());
         verify(userDao, times(1)).save(userMock);
     }
 
     @Test
-    public void shouldFailToCreateAUser() {
-        when(userDao.findByEmail(userMock.getEmail())).thenReturn(mock(User.class));
-        assertThrows(UserAlreadyExistingException.class, () -> userService.create(userMock));
-        verify(userDao, times(1)).findByEmail(userMock.getEmail());
+    public void shouldFailToCreateAUserBecauseNotInSwiss() {
+        String ipAddress = "NOTSwissIpAddress";
+        when(userDao.getByEmail(userMock.getEmail())).thenReturn(null);
+        when(userLocationService.getCountryByIp(ipAddress)).thenReturn("IT");
+        assertThrows(UserCreationException.class, () -> userService.create(userMock, ipAddress));
+        verify(userDao, times(1)).getByEmail(userMock.getEmail());
+        verify(userDao, never()).save(userMock);
+    }
+
+    @Test
+    public void shouldFailToCreateAUserBecauseAlreadyExisting() {
+        when(userDao.getByEmail(userMock.getEmail())).thenReturn(mock(User.class));
+        assertThrows(UserCreationException.class, () -> userService.create(userMock, "8.8.8.8"));
+        verify(userDao, times(1)).getByEmail(userMock.getEmail());
         verify(userDao, never()).save(userMock);
     }
 
@@ -73,19 +87,17 @@ public class UserServiceTest {
     @Test
     public void shouldRetrieveAUserByEmail() {
         String testEmail = "email@test.com";
-        when(userDao.findByEmail(testEmail))
-                .thenReturn(userMock);
+        when(userDao.getByEmail(testEmail)).thenReturn(userMock);
         userService.getByEmail(testEmail);
-        verify(userDao, times(1)).findByEmail(testEmail);
+        verify(userDao, times(1)).getByEmail(testEmail);
     }
 
     @Test
-    public void shouldUpdateAUserButNotPassword() throws UserNotFoundException {
-        User userToUpdate = new User("User1", "password1", "Address 1", "email1@email.com");
+    public void shouldUpdateAUser() throws UserNotFoundException {
+        User userToUpdate = mock(User.class);
         when(userDao.getOne(userToUpdate.getId())).thenReturn(userMock);
         when(userDao.save(userToUpdate)).thenReturn(userMock);
-        User updatedUser = userService.update(userToUpdate);
-        assertNull(updatedUser.getPassword());
+        userService.update(userToUpdate);
         verify(userDao, times(1)).getOne(userToUpdate.getId());
         verify(userDao, times(1)).save(userToUpdate);
     }

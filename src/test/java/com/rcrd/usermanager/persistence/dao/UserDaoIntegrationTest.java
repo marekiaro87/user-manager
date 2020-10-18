@@ -3,8 +3,6 @@ package com.rcrd.usermanager.persistence.dao;
 import com.rcrd.usermanager.UserManagerApplication;
 import com.rcrd.usermanager.persistence.model.User;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +66,7 @@ public class UserDaoIntegrationTest {
     public void shouldInsertAndRetrieveAUserByEmail(){
         User user1 = new User("User1", "password1", "Address 1","email1@email.com");
         userDao.save(user1);
-        User retrievedUser = userDao.findByEmail(user1.getEmail());
+        User retrievedUser = userDao.getByEmail(user1.getEmail());
         assertEquals(user1, retrievedUser);
     }
 }

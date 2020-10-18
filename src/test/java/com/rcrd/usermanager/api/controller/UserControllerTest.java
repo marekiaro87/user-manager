@@ -19,8 +19,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(UserManagerController.class)
-public class UserManagerControllerTest {
+@WebMvcTest(UserController.class)
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -38,7 +38,7 @@ public class UserManagerControllerTest {
         UserDTO userDTO = new UserDTO();
         User user = new User();
         when(userDTOConverter.convertToEntity(userDTO)).thenReturn(user);
-        when(userService.create(user)).thenReturn(user);
+        when(userService.create(user, "8.8.8.8")).thenReturn(user);
         when(userDTOConverter.convertToDTO(user)).thenReturn(userDTO);
         mvc.perform(MockMvcRequestBuilders.post("/user/")
                 .content(objectMapper.writeValueAsBytes(userDTO))
