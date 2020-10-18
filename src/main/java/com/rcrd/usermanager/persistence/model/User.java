@@ -2,6 +2,7 @@ package com.rcrd.usermanager.persistence.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,6 +19,13 @@ public class User {
     private String email;
 
     User() {
+    }
+
+    public User(String firstName, String password, String address, String email) {
+        this.firstName = firstName;
+        this.password = password;
+        this.address = address;
+        this.email = email;
     }
 
     public Long getId() {
@@ -86,5 +94,16 @@ public class User {
                 .append(address)
                 .append(email)
                 .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("firstName", firstName)
+                .append("password", password)
+                .append("address", address)
+                .append("email", email)
+                .toString();
     }
 }
