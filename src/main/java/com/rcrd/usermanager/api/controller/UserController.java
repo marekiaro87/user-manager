@@ -24,29 +24,29 @@ public class UserController {
         this.userDTOConverter = userDTOConverter;
     }
 
-    @PostMapping("/")
+    @PostMapping()
     public UserDTO createUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws UserCreationException {
         String incomingIp = request.getRemoteAddr();
         return userDTOConverter.convertToDTO(userService.create(userDTOConverter.convertToEntity(userDTO), incomingIp));
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable Long id) {
+    public UserDTO getUserById(@PathVariable Long id) throws UserNotFoundException {
         return userDTOConverter.convertToDTO(userService.getById(id));
     }
 
-    @GetMapping("/firstname/{firstname}")
-    public List<UserDTO> getUserByFirstName(@PathVariable String firstName) {
+    @GetMapping("/findByName")
+    public List<UserDTO> getUserByFirstName(@RequestParam String firstName) throws UserNotFoundException {
         return userService.findByName(firstName).stream().map(userDTOConverter::convertToDTO).collect(Collectors.toList());
     }
 
-    @GetMapping("/address/{address}")
-    public List<UserDTO> getUserByAddress(@PathVariable String address) {
+    @GetMapping("/findByAddress")
+    public List<UserDTO> getUserByAddress(@RequestParam String address) throws UserNotFoundException {
         return userService.findByAddress(address).stream().map(userDTOConverter::convertToDTO).collect(Collectors.toList());
     }
 
-    @GetMapping("/email/{email}")
-    public UserDTO getUserByEmail(@PathVariable String email) {
+    @GetMapping("/findByEmail")
+    public UserDTO getUserByEmail(@RequestParam String email) throws UserNotFoundException {
         return userDTOConverter.convertToDTO(userService.getByEmail(email));
     }
 

@@ -7,7 +7,6 @@ import com.rcrd.usermanager.persistence.dao.UserDao;
 import com.rcrd.usermanager.persistence.model.User;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -42,8 +41,8 @@ public class UserService implements UserServiceI {
     }
 
     @Override
-    public User getById(long id) {
-        return userDao.getOne(id);
+    public User getById(long id) throws UserNotFoundException {
+        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING));
     }
 
     @Override
@@ -64,16 +63,15 @@ public class UserService implements UserServiceI {
     @Override
     @Transactional
     public User update(User user) throws UserNotFoundException {
-        try {
-            userDao.getOne(user.getId());
-            return userDao.save(user);
-        } catch (EntityNotFoundException e) {
-            throw new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING);
-        }
+        userDao.findById(user.getId())
+                .orElseThrow(() -> new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING));
+        return userDao.save(user);
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(long id) throws UserNotFoundException {
+        userDao.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING));
         userDao.deleteById(id);
     }
 }

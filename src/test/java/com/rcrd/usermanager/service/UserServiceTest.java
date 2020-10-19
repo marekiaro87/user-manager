@@ -10,8 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -61,14 +61,14 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldRetrieveAUserById() {
-        when(userDao.getOne(userMock.getId())).thenReturn(userMock);
+    public void shouldRetrieveAUserById() throws UserNotFoundException {
+        when(userDao.findById(userMock.getId())).thenReturn(java.util.Optional.of(userMock));
         userService.getById(userMock.getId());
-        verify(userDao, times(1)).getOne(userMock.getId());
+        verify(userDao, times(1)).findById(userMock.getId());
     }
 
     @Test
-    public void shouldRetrieveUsersByName() {
+    public void shouldRetrieveUsersByName() throws UserNotFoundException {
         when(userDao.findByFirstName(userMock.getFirstName()))
                 .thenReturn(Collections.singletonList(userMock));
         userService.findByName(userMock.getFirstName());
@@ -76,7 +76,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldRetrieveUsersByAddress() {
+    public void shouldRetrieveUsersByAddress() throws UserNotFoundException {
         String testAddress = "Test address";
         when(userDao.findByAddressContaining(testAddress))
                 .thenReturn(Collections.singletonList(userMock));
@@ -85,7 +85,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldRetrieveAUserByEmail() {
+    public void shouldRetrieveAUserByEmail() throws UserNotFoundException {
         String testEmail = "email@test.com";
         when(userDao.getByEmail(testEmail)).thenReturn(userMock);
         userService.getByEmail(testEmail);
@@ -95,25 +95,26 @@ public class UserServiceTest {
     @Test
     public void shouldUpdateAUser() throws UserNotFoundException {
         User userToUpdate = mock(User.class);
-        when(userDao.getOne(userToUpdate.getId())).thenReturn(userMock);
+        when(userDao.findById(userToUpdate.getId())).thenReturn(Optional.of(userMock));
         when(userDao.save(userToUpdate)).thenReturn(userMock);
         userService.update(userToUpdate);
-        verify(userDao, times(1)).getOne(userToUpdate.getId());
+        verify(userDao, times(1)).findById(userToUpdate.getId());
         verify(userDao, times(1)).save(userToUpdate);
     }
 
     @Test
     public void shouldFailToUpdate() {
         User userToUpdate = mock(User.class);
-        when(userDao.getOne(userToUpdate.getId())).thenThrow(EntityNotFoundException.class);
+        when(userDao.findById(userToUpdate.getId())).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> userService.update(userToUpdate));
-        verify(userDao, times(1)).getOne(userToUpdate.getId());
+        verify(userDao, times(1)).findById(userToUpdate.getId());
         verify(userDao, never()).save(userToUpdate);
     }
 
     @Test
-    public void shouldDeleteAUser() {
+    public void shouldDeleteAUser() throws UserNotFoundException {
         Long idToDelete = 1L;
+        when(userDao.findById(idToDelete)).thenReturn(Optional.of(mock(User.class)));
         doNothing().when(userDao).deleteById(idToDelete);
         userService.deleteById(idToDelete);
         verify(userDao, times(1)).deleteById(idToDelete);

@@ -40,7 +40,7 @@ public class UserControllerTest {
         when(userDTOConverter.convertToEntity(userDTO)).thenReturn(user);
         when(userService.create(user, "8.8.8.8")).thenReturn(user);
         when(userDTOConverter.convertToDTO(user)).thenReturn(userDTO);
-        mvc.perform(MockMvcRequestBuilders.post("/user/")
+        mvc.perform(MockMvcRequestBuilders.post("/user")
                 .content(objectMapper.writeValueAsBytes(userDTO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

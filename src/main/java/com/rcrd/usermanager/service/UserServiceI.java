@@ -12,7 +12,7 @@ public interface UserServiceI {
 
     User create(User user, String ipAddress) throws UserCreationException;
 
-    User getById(long id);
+    User getById(long id) throws UserNotFoundException;
 
     List<User> findByName(String name);
 
@@ -22,6 +22,6 @@ public interface UserServiceI {
 
     User update(User user) throws UserNotFoundException;
 
-    void deleteById(long id);
+    void deleteById(long id) throws UserNotFoundException;
 
 }

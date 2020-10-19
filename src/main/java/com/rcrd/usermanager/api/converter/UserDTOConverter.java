@@ -10,15 +10,15 @@ public class UserDTOConverter {
 
     private final ModelMapper modelMapper;
 
-    public UserDTOConverter(ModelMapper modelMapper){
+    public UserDTOConverter(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
-    public UserDTO convertToDTO(User user){
+    public UserDTO convertToDTO(User user) {
         return modelMapper.map(user, UserDTO.class);
     }
 
-    public User convertToEntity(UserDTO userDTO){
+    public User convertToEntity(UserDTO userDTO) {
         return modelMapper.map(userDTO, User.class);
     }
 }
