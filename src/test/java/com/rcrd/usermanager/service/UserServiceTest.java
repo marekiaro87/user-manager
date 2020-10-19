@@ -1,5 +1,6 @@
 package com.rcrd.usermanager.service;
 
+import com.rcrd.usermanager.event.sender.UserEventSenderI;
 import com.rcrd.usermanager.exception.UserCreationException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
 import com.rcrd.usermanager.persistence.dao.UserDao;
@@ -27,6 +28,9 @@ public class UserServiceTest {
 
     @Mock
     private UserLocationServiceI userLocationService;
+
+    @Mock
+    private UserEventSenderI userEventSender;
 
     @InjectMocks
     private UserService userService;
@@ -95,8 +99,10 @@ public class UserServiceTest {
     @Test
     public void shouldUpdateAUser() throws UserNotFoundException {
         User userToUpdate = mock(User.class);
-        when(userDao.findById(userToUpdate.getId())).thenReturn(Optional.of(userMock));
+        User existingUser = mock(User.class);
+        when(userDao.findById(userToUpdate.getId())).thenReturn(Optional.of(existingUser));
         when(userDao.save(userToUpdate)).thenReturn(userMock);
+        doNothing().when(userEventSender).userUpdated(existingUser, userMock);
         userService.update(userToUpdate);
         verify(userDao, times(1)).findById(userToUpdate.getId());
         verify(userDao, times(1)).save(userToUpdate);

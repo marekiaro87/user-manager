@@ -1,5 +1,6 @@
 package com.rcrd.usermanager.service;
 
+import com.rcrd.usermanager.event.sender.UserEventSenderI;
 import com.rcrd.usermanager.exception.ExceptionMessages;
 import com.rcrd.usermanager.exception.UserCreationException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
@@ -17,11 +18,14 @@ public class UserService implements UserServiceI {
 
     private final UserLocationServiceI userLocationService;
 
+    private final UserEventSenderI userEventSender;
+
     private static final String SWISS_COUNTRY_CODE = "CH";
 
-    public UserService(UserDao userDao, UserLocationServiceI userLocationService) {
+    public UserService(UserDao userDao, UserLocationServiceI userLocationService, UserEventSenderI userEventSenderI) {
         this.userDao = userDao;
         this.userLocationService = userLocationService;
+        this.userEventSender = userEventSenderI;
     }
 
     @Override
@@ -63,9 +67,11 @@ public class UserService implements UserServiceI {
     @Override
     @Transactional
     public User update(User user) throws UserNotFoundException {
-        userDao.findById(user.getId())
+        User retrievedUser = userDao.findById(user.getId())
                 .orElseThrow(() -> new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING));
-        return userDao.save(user);
+        User updatedUser = userDao.save(user);
+        userEventSender.userUpdated(retrievedUser, updatedUser);
+        return updatedUser;
     }
 
     @Override
