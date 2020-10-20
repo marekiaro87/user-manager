@@ -41,20 +41,26 @@ services:
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'
+    user: root
     networks:
       - app-tier
     ports:
       - '2181:2181'
+    volumes:
+      - zookeeper_data:/bitnami/zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
   kafka:
     image: 'bitnami/kafka:latest'
+    user: root
     networks:
       - app-tier
     ports:
       - '9092:9092'
       - '9093:9093'
+    volumes:
+      - kafka_data:/bitnami/kafka
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
@@ -65,3 +71,8 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local

@@ -2,7 +2,7 @@ package com.rcrd.usermanager.api.converter;
 
 import com.rcrd.usermanager.UserManagerApplication;
 import com.rcrd.usermanager.api.model.UserDTO;
-import com.rcrd.usermanager.persistence.model.User;
+import com.rcrd.usermanager.model.UserBo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,8 @@ public class UserDTOConverterTest {
     private UserDTOConverter userDTOConverter;
 
     @Test
-    public void shouldConvertToDTO(){
-        User user = new User("User1", "password1", "Address 1","email1@email.com");
+    public void shouldConvertToDTO() {
+        UserBo user = new UserBo("User1", "password1", "Address 1", "email1@email.com");
         UserDTO userDTO = userDTOConverter.convertToDTO(user);
         assertEquals(user.getId(), userDTO.getId());
         assertEquals(user.getFirstName(), userDTO.getFirstName());
@@ -30,14 +30,14 @@ public class UserDTOConverterTest {
     }
 
     @Test
-    public void shouldConvertToEntity(){
+    public void shouldConvertToEntity() {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(1L);
         userDTO.setFirstName("Name");
         userDTO.setPassword("password");
         userDTO.setAddress("address");
         userDTO.setEmail("email");
-        User user = userDTOConverter.convertToEntity(userDTO);
+        UserBo user = userDTOConverter.convertToEntity(userDTO);
         assertEquals(userDTO.getId(), user.getId());
         assertEquals(userDTO.getFirstName(), user.getFirstName());
         assertEquals(userDTO.getPassword(), user.getPassword());

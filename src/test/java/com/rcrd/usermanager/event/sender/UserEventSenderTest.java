@@ -5,7 +5,7 @@ import com.rcrd.usermanager.event.model.UserCreatedEvent;
 import com.rcrd.usermanager.event.model.UserDeletedEvent;
 import com.rcrd.usermanager.event.model.UserEvent;
 import com.rcrd.usermanager.event.model.UserUpdatedEvent;
-import com.rcrd.usermanager.persistence.model.User;
+import com.rcrd.usermanager.model.UserBo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,31 +29,31 @@ public class UserEventSenderTest {
 
     @Test
     public void itShouldSendACreateEvent() {
-        User created = mock(User.class);
+        UserBo created = mock(UserBo.class);
         userEventSender.userCreated(created);
         verify(kafkaTemplate, times(1)).send(anyString(), anyLong(), any(UserCreatedEvent.class));
     }
 
     @Test
     public void itShouldSendAnUpdateEvent() {
-        User oldUser = new User("Name", "password", "address", "email");
+        UserBo oldUser = new UserBo("Name", "password", "address", "email");
         oldUser.setId(1L);
-        User newUser = new User("Name", "password", "addressChanged", "email");
+        UserBo newUser = new UserBo("Name", "password", "addressChanged", "email");
         userEventSender.userUpdated(oldUser, newUser);
         verify(kafkaTemplate, times(1)).send(anyString(), anyLong(), any(UserUpdatedEvent.class));
     }
 
     @Test
     public void itShouldNotSendTheUpdateEvent() {
-        User oldUser = new User("Name", "password", "address", "email");
-        User usedWithoutUpdate = new User("Name", "password", "address", "email");
+        UserBo oldUser = new UserBo("Name", "password", "address", "email");
+        UserBo usedWithoutUpdate = new UserBo("Name", "password", "address", "email");
         userEventSender.userUpdated(oldUser, usedWithoutUpdate);
         verify(kafkaTemplate, never()).send(anyString(), anyLong(), any(UserUpdatedEvent.class));
     }
 
     @Test
     public void itShouldSendADeleteEvent() {
-        User created = mock(User.class);
+        UserBo created = mock(UserBo.class);
         userEventSender.userDeleted(created);
         verify(kafkaTemplate, times(1)).send(anyString(), anyLong(), any(UserDeletedEvent.class));
     }

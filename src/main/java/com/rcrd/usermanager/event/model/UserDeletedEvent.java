@@ -1,18 +1,18 @@
 package com.rcrd.usermanager.event.model;
 
-import com.rcrd.usermanager.persistence.model.User;
+import com.rcrd.usermanager.model.UserBo;
 
 public class UserDeletedEvent implements UserEvent {
 
     private final EventType eventType = EventType.USER_DELETED;
 
-    private User deletedUser;
+    private UserBo deletedUser;
 
-    public User getDeletedUser() {
+    public UserBo getDeletedUser() {
         return deletedUser;
     }
 
-    public void setDeletedUser(User deletedUser) {
+    public void setDeletedUser(UserBo deletedUser) {
         this.deletedUser = deletedUser;
     }
 

@@ -18,23 +18,23 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = UserManagerApplication.class)
-public class UserDaoIntegrationTest {
+public class UserRepositoryIntegrationTest {
 
     @Autowired
-    private UserDao userDao;
+    private UserRepository userRepository;
 
     @AfterEach
     public void cleanDB(){
-        userDao.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     @Transactional
     public void shouldInsertAndRetrieveAUserById(){
         User user1 = new User("User1", "password1", "Address 1","email1@email.com");
-        User insertedUser = userDao.save(user1);
+        User insertedUser = userRepository.save(user1);
         assertNotNull(insertedUser.getId());
-        User retrievedUser = userDao.getOne(insertedUser.getId());
+        User retrievedUser = userRepository.getOne(insertedUser.getId());
         assertEquals(insertedUser, retrievedUser);
     }
 
@@ -42,8 +42,8 @@ public class UserDaoIntegrationTest {
     @Transactional
     public void shouldInsertAndRetrieveAUserByFirstName(){
         User user1 = new User("User1", "password1", "Address 1","email1@email.com");
-        userDao.save(user1);
-        List<User> retrievedUsers = userDao.findByFirstName(user1.getFirstName());
+        userRepository.save(user1);
+        List<User> retrievedUsers = userRepository.findByFirstName(user1.getFirstName());
         assertEquals(1, retrievedUsers.size());
         assertEquals(user1, retrievedUsers.get(0));
     }
@@ -53,11 +53,11 @@ public class UserDaoIntegrationTest {
     public void shouldInsertAndRetrieveUsersByAddress(){
         User user1 = new User("User1", "password1", "Address 1","email1@email.com");
         User user2 = new User("User2", "password2", "Address 2","email2@email.com");
-        userDao.save(user1);
-        userDao.save(user2);
-        List<User> retrievedUsers = userDao.findByAddressContaining(user2.getAddress());
+        userRepository.save(user1);
+        userRepository.save(user2);
+        List<User> retrievedUsers = userRepository.findByAddressContaining(user2.getAddress());
         assertEquals(1, retrievedUsers.size());
-        retrievedUsers = userDao.findByAddressContaining("Address");
+        retrievedUsers = userRepository.findByAddressContaining("Address");
         assertEquals(2, retrievedUsers.size());
     }
 
@@ -65,8 +65,8 @@ public class UserDaoIntegrationTest {
     @Transactional
     public void shouldInsertAndRetrieveAUserByEmail(){
         User user1 = new User("User1", "password1", "Address 1","email1@email.com");
-        userDao.save(user1);
-        User retrievedUser = userDao.getByEmail(user1.getEmail());
+        userRepository.save(user1);
+        User retrievedUser = userRepository.getByEmail(user1.getEmail());
         assertEquals(user1, retrievedUser);
     }
 }

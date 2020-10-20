@@ -3,6 +3,7 @@ package com.rcrd.usermanager.service;
 import com.rcrd.usermanager.event.sender.UserEventSenderI;
 import com.rcrd.usermanager.exception.UserCreationException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
+import com.rcrd.usermanager.model.UserBo;
 import com.rcrd.usermanager.persistence.dao.UserDao;
 import com.rcrd.usermanager.persistence.model.User;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ public class UserServiceTest {
     private UserDao userDao;
 
     @Mock
-    private User userMock;
+    private UserBo userMock;
 
     @Mock
     private UserLocationServiceI userLocationService;
@@ -41,11 +42,11 @@ public class UserServiceTest {
         when(userDao.getByEmail(userMock.getEmail())).thenReturn(null);
         when(userDao.save(userMock)).thenReturn(userMock);
         when(userLocationService.getCountryByIp(ipAddress)).thenReturn("CH");
-        doNothing().when(userEventSender).userCreated(any(User.class));
+        doNothing().when(userEventSender).userCreated(any(UserBo.class));
         userService.create(userMock, ipAddress);
         verify(userDao, times(1)).getByEmail(userMock.getEmail());
         verify(userDao, times(1)).save(userMock);
-        verify(userEventSender, times(1)).userCreated(any(User.class));
+        verify(userEventSender, times(1)).userCreated(any(UserBo.class));
     }
 
     @Test
@@ -60,7 +61,7 @@ public class UserServiceTest {
 
     @Test
     public void shouldFailToCreateAUserBecauseAlreadyExisting() {
-        when(userDao.getByEmail(userMock.getEmail())).thenReturn(mock(User.class));
+        when(userDao.getByEmail(userMock.getEmail())).thenReturn(mock(UserBo.class));
         assertThrows(UserCreationException.class, () -> userService.create(userMock, "8.8.8.8"));
         verify(userDao, times(1)).getByEmail(userMock.getEmail());
         verify(userDao, never()).save(userMock);
@@ -68,9 +69,9 @@ public class UserServiceTest {
 
     @Test
     public void shouldRetrieveAUserById() throws UserNotFoundException {
-        when(userDao.findById(userMock.getId())).thenReturn(java.util.Optional.of(userMock));
+        when(userDao.getById(userMock.getId())).thenReturn(userMock);
         userService.getById(userMock.getId());
-        verify(userDao, times(1)).findById(userMock.getId());
+        verify(userDao, times(1)).getById(userMock.getId());
     }
 
     @Test
@@ -100,33 +101,24 @@ public class UserServiceTest {
 
     @Test
     public void shouldUpdateAUser() throws UserNotFoundException {
-        User userToUpdate = mock(User.class);
-        User existingUser = mock(User.class);
-        when(userDao.findById(userToUpdate.getId())).thenReturn(Optional.of(existingUser));
+        UserBo userToUpdate = mock(UserBo.class);
+        UserBo existingUser = mock(UserBo.class);
+        when(userDao.getById(userToUpdate.getId())).thenReturn(existingUser);
         when(userDao.save(userToUpdate)).thenReturn(userMock);
         doNothing().when(userEventSender).userUpdated(existingUser, userMock);
         userService.update(userToUpdate);
-        verify(userDao, times(1)).findById(userToUpdate.getId());
+        verify(userDao, times(1)).getById(userToUpdate.getId());
         verify(userDao, times(1)).save(userToUpdate);
-    }
-
-    @Test
-    public void shouldFailToUpdate() {
-        User userToUpdate = mock(User.class);
-        when(userDao.findById(userToUpdate.getId())).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () -> userService.update(userToUpdate));
-        verify(userDao, times(1)).findById(userToUpdate.getId());
-        verify(userDao, never()).save(userToUpdate);
     }
 
     @Test
     public void shouldDeleteAUserAndSendAnEvent() throws UserNotFoundException {
         Long idToDelete = 1L;
-        when(userDao.findById(idToDelete)).thenReturn(Optional.of(mock(User.class)));
+        when(userDao.getById(idToDelete)).thenReturn(mock(UserBo.class));
         doNothing().when(userDao).deleteById(idToDelete);
-        doNothing().when(userEventSender).userDeleted(any(User.class));
+        doNothing().when(userEventSender).userDeleted(any(UserBo.class));
         userService.deleteById(idToDelete);
         verify(userDao, times(1)).deleteById(idToDelete);
-        verify(userEventSender, times(1)).userDeleted(any(User.class));
+        verify(userEventSender, times(1)).userDeleted(any(UserBo.class));
     }
 }

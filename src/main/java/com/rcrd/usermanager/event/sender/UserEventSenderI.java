@@ -1,12 +1,12 @@
 package com.rcrd.usermanager.event.sender;
 
-import com.rcrd.usermanager.persistence.model.User;
+import com.rcrd.usermanager.model.UserBo;
 
 public interface UserEventSenderI {
 
-    void userCreated(User newUser);
+    void userCreated(UserBo newUser);
 
-    void userUpdated(User oldUser, User newUser);
+    void userUpdated(UserBo oldUser, UserBo newUser);
 
-    void userDeleted(User deletedUser);
+    void userDeleted(UserBo deletedUser);
 }

@@ -1,18 +1,18 @@
 package com.rcrd.usermanager.event.model;
 
-import com.rcrd.usermanager.persistence.model.User;
+import com.rcrd.usermanager.model.UserBo;
 
 public class UserCreatedEvent implements UserEvent {
 
     private final EventType eventType = EventType.USER_CREATED;
 
-    private User createdUser;
+    private UserBo createdUser;
 
-    public User getCreatedUser() {
+    public UserBo getCreatedUser() {
         return createdUser;
     }
 
-    public void setCreatedUser(User createdUser) {
+    public void setCreatedUser(UserBo createdUser) {
         this.createdUser = createdUser;
     }
 

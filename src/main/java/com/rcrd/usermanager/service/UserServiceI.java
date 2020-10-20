@@ -2,25 +2,26 @@ package com.rcrd.usermanager.service;
 
 import com.rcrd.usermanager.exception.UserCreationException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
-import com.rcrd.usermanager.persistence.model.User;
+import com.rcrd.usermanager.model.UserBo;
+
 import java.util.List;
 
 /**
- * Interface providing basics CRUD operation on a {@link User}
+ * Interface providing basics CRUD operation on a {@link UserBo}
  */
 public interface UserServiceI {
 
-    User create(User user, String ipAddress) throws UserCreationException;
+    UserBo create(UserBo user, String ipAddress) throws UserCreationException;
 
-    User getById(long id) throws UserNotFoundException;
+    UserBo getById(long id) throws UserNotFoundException;
 
-    List<User> findByName(String name);
+    List<UserBo> findByName(String name);
 
-    List<User> findByAddress(String address);
+    List<UserBo> findByAddress(String address);
 
-    User getByEmail(String email);
+    UserBo getByEmail(String email);
 
-    User update(User user) throws UserNotFoundException;
+    UserBo update(UserBo user) throws UserNotFoundException;
 
     void deleteById(long id) throws UserNotFoundException;
 

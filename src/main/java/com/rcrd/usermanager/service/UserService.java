@@ -4,8 +4,8 @@ import com.rcrd.usermanager.event.sender.UserEventSenderI;
 import com.rcrd.usermanager.exception.ExceptionMessages;
 import com.rcrd.usermanager.exception.UserCreationException;
 import com.rcrd.usermanager.exception.UserNotFoundException;
+import com.rcrd.usermanager.model.UserBo;
 import com.rcrd.usermanager.persistence.dao.UserDao;
-import com.rcrd.usermanager.persistence.model.User;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,12 +30,12 @@ public class UserService implements UserServiceI {
 
     @Override
     @Transactional
-    public User create(User user, String ipAddress) throws UserCreationException {
-        User existingUser = userDao.getByEmail(user.getEmail());
+    public UserBo create(UserBo user, String ipAddress) throws UserCreationException {
+        UserBo existingUser = userDao.getByEmail(user.getEmail());
         if (existingUser == null) {
             String userCountry = userLocationService.getCountryByIp(ipAddress);
             if (userCountry.equals(SWISS_COUNTRY_CODE)) {
-                User createdUser = userDao.save(user);
+                UserBo createdUser = userDao.save(user);
                 userEventSender.userCreated(createdUser);
                 return createdUser;
             } else {
@@ -47,39 +47,37 @@ public class UserService implements UserServiceI {
     }
 
     @Override
-    public User getById(long id) throws UserNotFoundException {
-        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING));
+    public UserBo getById(long id) throws UserNotFoundException {
+        return userDao.getById(id);
     }
 
     @Override
-    public List<User> findByName(String name) {
+    public List<UserBo> findByName(String name) {
         return userDao.findByFirstName(name);
     }
 
     @Override
-    public List<User> findByAddress(String address) {
+    public List<UserBo> findByAddress(String address) {
         return userDao.findByAddressContaining(address);
     }
 
     @Override
-    public User getByEmail(String email) {
+    public UserBo getByEmail(String email) {
         return userDao.getByEmail(email);
     }
 
     @Override
     @Transactional
-    public User update(User user) throws UserNotFoundException {
-        User retrievedUser = userDao.findById(user.getId())
-                .orElseThrow(() -> new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING));
-        User updatedUser = userDao.save(user);
+    public UserBo update(UserBo user) throws UserNotFoundException {
+        UserBo retrievedUser = userDao.getById(user.getId());
+        UserBo updatedUser = userDao.save(user);
         userEventSender.userUpdated(retrievedUser, updatedUser);
         return updatedUser;
     }
 
     @Override
     public void deleteById(long id) throws UserNotFoundException {
-        User userToDelete = userDao.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING));
+        UserBo userToDelete = userDao.getById(id);
         userDao.deleteById(id);
         userEventSender.userDeleted(userToDelete);
     }

@@ -3,7 +3,7 @@ package com.rcrd.usermanager.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rcrd.usermanager.api.converter.UserDTOConverter;
 import com.rcrd.usermanager.api.model.UserDTO;
-import com.rcrd.usermanager.persistence.model.User;
+import com.rcrd.usermanager.model.UserBo;
 import com.rcrd.usermanager.service.UserServiceI;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +36,7 @@ public class UserControllerTest {
     @Test
     public void shouldCreateAUser() throws Exception {
         UserDTO userDTO = new UserDTO();
-        User user = new User();
+        UserBo user = new UserBo();
         when(userDTOConverter.convertToEntity(userDTO)).thenReturn(user);
         when(userService.create(user, "8.8.8.8")).thenReturn(user);
         when(userDTOConverter.convertToDTO(user)).thenReturn(userDTO);
@@ -49,7 +49,7 @@ public class UserControllerTest {
     @Test
     public void shouldRetrieveAUser() throws Exception {
         UserDTO retrievedUserDTO = new UserDTO();
-        User retrievedUser = new User();
+        UserBo retrievedUser = new UserBo();
         when(userService.getById(1)).thenReturn(retrievedUser);
         when(userDTOConverter.convertToDTO(retrievedUser)).thenReturn(retrievedUserDTO);
         mvc.perform(MockMvcRequestBuilders.get("/user/1")

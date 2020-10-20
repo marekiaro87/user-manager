@@ -1,28 +1,28 @@
 package com.rcrd.usermanager.event.model;
 
-import com.rcrd.usermanager.persistence.model.User;
+import com.rcrd.usermanager.model.UserBo;
 
 public class UserUpdatedEvent implements UserEvent {
 
     private final EventType eventType = EventType.USER_UPDATED;
 
-    private User oldUser;
+    private UserBo oldUser;
 
-    private User newUser;
+    private UserBo newUser;
 
-    public User getOldUser() {
+    public UserBo getOldUser() {
         return oldUser;
     }
 
-    public void setOldUser(User oldUser) {
+    public void setOldUser(UserBo oldUser) {
         this.oldUser = oldUser;
     }
 
-    public User getNewUser() {
+    public UserBo getNewUser() {
         return newUser;
     }
 
-    public void setNewUser(User newUser) {
+    public void setNewUser(UserBo newUser) {
         this.newUser = newUser;
     }
 

@@ -36,17 +36,17 @@ public class UserController {
     }
 
     @GetMapping("/findByName")
-    public List<UserDTO> getUserByFirstName(@RequestParam String firstName) throws UserNotFoundException {
+    public List<UserDTO> getUserByFirstName(@RequestParam String firstName) {
         return userService.findByName(firstName).stream().map(userDTOConverter::convertToDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/findByAddress")
-    public List<UserDTO> getUserByAddress(@RequestParam String address) throws UserNotFoundException {
+    public List<UserDTO> getUserByAddress(@RequestParam String address) {
         return userService.findByAddress(address).stream().map(userDTOConverter::convertToDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/findByEmail")
-    public UserDTO getUserByEmail(@RequestParam String email) throws UserNotFoundException {
+    public UserDTO getUserByEmail(@RequestParam String email) {
         return userDTOConverter.convertToDTO(userService.getByEmail(email));
     }
 
@@ -55,4 +55,10 @@ public class UserController {
         userDTO.setId(id);
         return userDTOConverter.convertToDTO(userService.update(userDTOConverter.convertToEntity(userDTO)));
     }
+
+    @DeleteMapping("/{id}")
+        public void deleteUserById(@PathVariable Long id) throws UserNotFoundException {
+            userService.deleteById(id);
+    }
+
 }
