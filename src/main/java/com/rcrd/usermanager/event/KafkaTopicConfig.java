@@ -14,6 +14,8 @@ public class KafkaTopicConfig {
     @Value(value = "${kafka.bootstrapAddress}")
     private String bootstrapAddress;
 
+    public static final String USER_UPDATES_TOPIC = "user.updates";
+
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
@@ -22,7 +24,7 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic topic1() {
-        return new NewTopic("user.update", 1, (short) 1);
+    public NewTopic userUpdates() {
+        return new NewTopic(USER_UPDATES_TOPIC, 1, (short) 1);
     }
 }

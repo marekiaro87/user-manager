@@ -35,7 +35,9 @@ public class UserService implements UserServiceI {
         if (existingUser == null) {
             String userCountry = userLocationService.getCountryByIp(ipAddress);
             if (userCountry.equals(SWISS_COUNTRY_CODE)) {
-                return userDao.save(user);
+                User createdUser = userDao.save(user);
+                userEventSender.userCreated(createdUser);
+                return createdUser;
             } else {
                 throw new UserCreationException(String.format(ExceptionMessages.CREATION_NOT_ALLOWED, user.getEmail()));
             }
@@ -76,8 +78,9 @@ public class UserService implements UserServiceI {
 
     @Override
     public void deleteById(long id) throws UserNotFoundException {
-        userDao.findById(id)
+        User userToDelete = userDao.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(ExceptionMessages.USER_NOT_EXISTING));
         userDao.deleteById(id);
+        userEventSender.userDeleted(userToDelete);
     }
 }

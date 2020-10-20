@@ -1,5 +1,6 @@
 package com.rcrd.usermanager.event;
 
+import com.fasterxml.jackson.databind.ser.std.NumberSerializer;
 import com.rcrd.usermanager.event.model.UserEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -21,16 +22,16 @@ public class KafkaConfig {
     private String bootstrapAddress;
 
     @Bean
-    public ProducerFactory<String, UserEvent> producerFactory() {
+    public ProducerFactory<Long, UserEvent> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, NumberSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
     @Bean
-    public KafkaTemplate<String, UserEvent> kafkaTemplate() {
+    public KafkaTemplate<Long, UserEvent> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

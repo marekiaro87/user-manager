@@ -41,9 +41,11 @@ public class UserServiceTest {
         when(userDao.getByEmail(userMock.getEmail())).thenReturn(null);
         when(userDao.save(userMock)).thenReturn(userMock);
         when(userLocationService.getCountryByIp(ipAddress)).thenReturn("CH");
+        doNothing().when(userEventSender).userCreated(any(User.class));
         userService.create(userMock, ipAddress);
         verify(userDao, times(1)).getByEmail(userMock.getEmail());
         verify(userDao, times(1)).save(userMock);
+        verify(userEventSender, times(1)).userCreated(any(User.class));
     }
 
     @Test
@@ -118,11 +120,13 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldDeleteAUser() throws UserNotFoundException {
+    public void shouldDeleteAUserAndSendAnEvent() throws UserNotFoundException {
         Long idToDelete = 1L;
         when(userDao.findById(idToDelete)).thenReturn(Optional.of(mock(User.class)));
         doNothing().when(userDao).deleteById(idToDelete);
+        doNothing().when(userEventSender).userDeleted(any(User.class));
         userService.deleteById(idToDelete);
         verify(userDao, times(1)).deleteById(idToDelete);
+        verify(userEventSender, times(1)).userDeleted(any(User.class));
     }
 }

@@ -4,6 +4,8 @@ import com.rcrd.usermanager.persistence.model.User;
 
 public class UserUpdatedEvent implements UserEvent {
 
+    private final EventType eventType = EventType.USER_UPDATED;
+
     private User oldUser;
 
     private User newUser;
@@ -22,5 +24,10 @@ public class UserUpdatedEvent implements UserEvent {
 
     public void setNewUser(User newUser) {
         this.newUser = newUser;
+    }
+
+    @Override
+    public EventType getEventType() {
+        return eventType;
     }
 }
