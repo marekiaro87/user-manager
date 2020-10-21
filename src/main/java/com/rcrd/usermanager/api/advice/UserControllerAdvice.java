@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import static com.rcrd.usermanager.exception.ExceptionMessages.INTERNAL_SERVER_ERROR;
+
 @ControllerAdvice
 public class UserControllerAdvice {
 
@@ -29,6 +31,6 @@ public class UserControllerAdvice {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     String runtimeExceptionHandler(RuntimeException ex) {
-        return ex.getMessage();
+        return INTERNAL_SERVER_ERROR;
     }
 }

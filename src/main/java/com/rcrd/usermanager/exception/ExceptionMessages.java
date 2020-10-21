@@ -11,4 +11,7 @@ public final class ExceptionMessages {
     public static final String EMAIL_ALREADY_EXISTS = "A user with the same email already exists: %s";
 
     public static final String USER_NOT_EXISTING = "The requested User doesn't exist in the system";
+
+    public static final String INTERNAL_SERVER_ERROR = "An error occurred in the system";
+
 }
