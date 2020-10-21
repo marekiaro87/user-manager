@@ -15,10 +15,18 @@ public class UserEntityConverter {
     }
 
     public UserBo convertToBo(User user) {
-        return modelMapper.map(user, UserBo.class);
+        if (user != null) {
+            return modelMapper.map(user, UserBo.class);
+        } else {
+            return null;
+        }
     }
 
     public User convertToEntity(UserBo userBo) {
-        return modelMapper.map(userBo, User.class);
+        if (userBo != null) {
+            return modelMapper.map(userBo, User.class);
+        } else {
+            return null;
+        }
     }
 }

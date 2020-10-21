@@ -15,10 +15,18 @@ public class UserDTOConverter {
     }
 
     public UserDTO convertToDTO(UserBo user) {
-        return modelMapper.map(user, UserDTO.class);
+        if (user != null) {
+            return modelMapper.map(user, UserDTO.class);
+        } else {
+            return null;
+        }
     }
 
     public UserBo convertToEntity(UserDTO userDTO) {
-        return modelMapper.map(userDTO, UserBo.class);
+        if (userDTO != null) {
+            return modelMapper.map(userDTO, UserBo.class);
+        } else {
+            return null;
+        }
     }
 }

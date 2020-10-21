@@ -26,7 +26,8 @@ public class UserController {
 
     @PostMapping()
     public UserDTO createUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws UserCreationException {
-        String incomingIp = request.getRemoteAddr();
+        String incomingIp = request.getHeader("X-FORWARDED-FOR") != null
+                ? request.getHeader("X-FORWARDED-FOR") : request.getRemoteAddr();
         return userDTOConverter.convertToDTO(userService.create(userDTOConverter.convertToEntity(userDTO), incomingIp));
     }
 
@@ -57,8 +58,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-        public void deleteUserById(@PathVariable Long id) throws UserNotFoundException {
-            userService.deleteById(id);
+    public void deleteUserById(@PathVariable Long id) throws UserNotFoundException {
+        userService.deleteById(id);
     }
 
 }

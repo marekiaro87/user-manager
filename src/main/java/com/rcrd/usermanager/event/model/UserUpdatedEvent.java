@@ -4,8 +4,6 @@ import com.rcrd.usermanager.model.UserBo;
 
 public class UserUpdatedEvent implements UserEvent {
 
-    private final EventType eventType = EventType.USER_UPDATED;
-
     private UserBo oldUser;
 
     private UserBo newUser;
@@ -28,7 +26,7 @@ public class UserUpdatedEvent implements UserEvent {
 
     @Override
     public EventType getEventType() {
-        return eventType;
+        return EventType.USER_UPDATED;
     }
 
     @Override

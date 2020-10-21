@@ -4,8 +4,6 @@ import com.rcrd.usermanager.model.UserBo;
 
 public class UserCreatedEvent implements UserEvent {
 
-    private final EventType eventType = EventType.USER_CREATED;
-
     private UserBo createdUser;
 
     public UserBo getCreatedUser() {
@@ -18,7 +16,7 @@ public class UserCreatedEvent implements UserEvent {
 
     @Override
     public EventType getEventType() {
-        return eventType;
+        return EventType.USER_CREATED;
     }
 
     @Override

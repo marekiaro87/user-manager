@@ -16,7 +16,6 @@ public class UserLocationService implements UserLocationServiceI {
         try {
             URL ipApi = new URL(String.format(countryServiceURL, ipAddress));
             URLConnection c = ipApi.openConnection();
-            c.setRequestProperty("User-Agent", "java-ipapi-client");
             BufferedReader reader = new BufferedReader(new InputStreamReader(c.getInputStream()));
             String country = reader.readLine();
             reader.close();

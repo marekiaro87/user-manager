@@ -4,8 +4,6 @@ import com.rcrd.usermanager.model.UserBo;
 
 public class UserDeletedEvent implements UserEvent {
 
-    private final EventType eventType = EventType.USER_DELETED;
-
     private UserBo deletedUser;
 
     public UserBo getDeletedUser() {
@@ -18,7 +16,7 @@ public class UserDeletedEvent implements UserEvent {
 
     @Override
     public EventType getEventType() {
-        return eventType;
+        return EventType.USER_DELETED;
     }
 
     @Override
