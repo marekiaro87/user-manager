@@ -1,5 +1,9 @@
 package com.rcrd.usermanager.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 public class UserBo {
 
     private Long id;
@@ -56,5 +60,44 @@ public class UserBo {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserBo userBo = (UserBo) o;
+
+        return new EqualsBuilder()
+                .append(id, userBo.id)
+                .append(firstName, userBo.firstName)
+                .append(password, userBo.password)
+                .append(address, userBo.address)
+                .append(email, userBo.email)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(firstName)
+                .append(password)
+                .append(address)
+                .append(email)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("firstName", firstName)
+                .append("password", password)
+                .append("address", address)
+                .append("email", email)
+                .toString();
     }
 }

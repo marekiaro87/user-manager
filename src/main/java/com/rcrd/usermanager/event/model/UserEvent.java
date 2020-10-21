@@ -10,4 +10,6 @@ public interface UserEvent {
 
     EventType getEventType();
 
+    Long getKey();
+
 }

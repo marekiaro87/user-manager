@@ -5,6 +5,8 @@ import com.rcrd.usermanager.event.model.UserDeletedEvent;
 import com.rcrd.usermanager.event.model.UserEvent;
 import com.rcrd.usermanager.event.model.UserUpdatedEvent;
 import com.rcrd.usermanager.model.UserBo;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +25,7 @@ public class UserEventSender implements UserEventSenderI {
     public void userCreated(UserBo newUser) {
         UserCreatedEvent event = new UserCreatedEvent();
         event.setCreatedUser(newUser);
-        kafkaTemplate.send(USER_UPDATES_TOPIC, newUser.getId(), event);
+        kafkaTemplate.send(createProducerRecord(event));
     }
 
     @Override
@@ -32,7 +34,7 @@ public class UserEventSender implements UserEventSenderI {
         if (isUserChanged(oldUser, newUser)) {
             event.setOldUser(oldUser);
             event.setNewUser(newUser);
-            kafkaTemplate.send(USER_UPDATES_TOPIC, oldUser.getId(), event);
+            kafkaTemplate.send(createProducerRecord(event));
         }
     }
 
@@ -40,7 +42,14 @@ public class UserEventSender implements UserEventSenderI {
     public void userDeleted(UserBo deletedUser) {
         UserDeletedEvent event = new UserDeletedEvent();
         event.setDeletedUser(deletedUser);
-        kafkaTemplate.send(USER_UPDATES_TOPIC, deletedUser.getId(), event);
+        kafkaTemplate.send(createProducerRecord(event));
+    }
+
+    private ProducerRecord<Long, UserEvent> createProducerRecord(UserEvent event) {
+        ProducerRecord<Long, UserEvent> record =
+                new ProducerRecord<Long, UserEvent>(USER_UPDATES_TOPIC, event.getKey(), event);
+        record.headers().add(new RecordHeader("EVENT_TYPE", event.getEventType().toString().getBytes()));
+        return record;
     }
 
     private boolean isUserChanged(UserBo oldUser, UserBo newUser) {

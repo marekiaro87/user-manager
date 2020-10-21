@@ -30,4 +30,9 @@ public class UserUpdatedEvent implements UserEvent {
     public EventType getEventType() {
         return eventType;
     }
+
+    @Override
+    public Long getKey() {
+        return oldUser.getId();
+    }
 }

@@ -20,4 +20,11 @@ public class UserDeletedEvent implements UserEvent {
     public EventType getEventType() {
         return eventType;
     }
+
+    @Override
+    public Long getKey() {
+        return deletedUser.getId();
+    }
+
+
 }

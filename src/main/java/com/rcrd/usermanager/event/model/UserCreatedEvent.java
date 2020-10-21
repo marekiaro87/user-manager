@@ -20,4 +20,9 @@ public class UserCreatedEvent implements UserEvent {
     public EventType getEventType() {
         return eventType;
     }
+
+    @Override
+    public Long getKey() {
+        return createdUser.getId();
+    }
 }
